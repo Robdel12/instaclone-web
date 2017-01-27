@@ -1,7 +1,8 @@
-import React from 'react'
-import { withRouter } from 'react-router'
-import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
+import React from 'react';
+import Loading from './presentational/Loading';
+import { withRouter } from 'react-router';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 
 class CreatePost extends React.Component {
 
@@ -14,17 +15,24 @@ class CreatePost extends React.Component {
   state = {
     description: '',
     imageUrl: '',
+    user: null,
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.user === null && nextProps.data.user) {
+      this.setState({user: nextProps.data.user });
+    }
   }
 
   render () {
     if (this.props.data.loading) {
-      return (<div>Loading</div>)
+      return <Loading />;
     }
 
     // redirect if no user is logged in
     if (!this.props.data.user) {
-      console.warn('only logged in users can create new posts')
-      this.props.router.replace('/')
+      console.warn('only logged in users can create new posts');
+      this.props.router.push('/');
     }
 
     return (
@@ -46,29 +54,30 @@ class CreatePost extends React.Component {
             <img src={this.state.imageUrl} role='presentation' className='w-100 mv3' />
           }
           {this.state.description && this.state.imageUrl &&
-            <button className='pa3 bg-black-10 bn dim ttu pointer' onClick={this.handlePost}>Post</button>
+           <button className='pa3 bg-black-10 bn dim ttu pointer' onClick={this.handlePost.bind(this)}>Post</button>
           }
         </div>
       </div>
-    )
+    );
   }
 
-  handlePost = () => {
-    const {description, imageUrl} = this.state
-    this.props.mutate({variables: {description, imageUrl}})
+  handlePost() {
+    const { description, imageUrl } = this.state;
+
+    this.props.mutate({ variables: { description, imageUrl, userId: this.state.user.id }})
       .then(() => {
-        this.props.router.replace('/')
-      })
+        this.props.router.replace('/');
+      });
   }
 }
 
 const createPost = gql`
-  mutation ($description: String!, $imageUrl: String!){
-    createPost(description: $description, imageUrl: $imageUrl) {
+  mutation ($description: String!, $imageUrl: String!, $userId: ID!){
+    createPhoto(description: $description, imageUrl: $imageUrl, userId: $userId) {
       id
     }
   }
-`
+`;
 
 const userQuery = gql`
   query {
@@ -76,8 +85,8 @@ const userQuery = gql`
       id
     }
   }
-`
+`;
 
 export default graphql(createPost)(
   graphql(userQuery, { options: { forceFetch: true }} )(withRouter(CreatePost))
-)
+);

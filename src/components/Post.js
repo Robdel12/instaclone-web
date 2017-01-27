@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 export default class Post extends React.Component {
 
@@ -21,6 +21,6 @@ export default class Post extends React.Component {
           {this.props.post.description}&nbsp;
         </div>
       </div>
-    )
+    );
   }
 }
