@@ -1,5 +1,5 @@
 import React from 'react';
-import Post from '../components/Post';
+import Photo from '../components/Photo';
 import Loading from './presentational/Loading';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -15,12 +15,10 @@ class ListPage extends React.Component {
       return <Loading />;
     }
     return (
-      <div className='w-100 flex justify-center'>
-        <div className='w-100' style={{ maxWidth: 400 }}>
-          {this.props.data.allPhotos.map((post) =>
-            <Post key={post.id} post={post} />
-          )}
-        </div>
+      <div style={{maxWidth: "600px", margin: "0 auto", padding: "20px 0"}}>
+        {this.props.data.allPhotos.map(photo =>
+          <Photo key={photo.id} photo={photo} user={photo.user} />
+        )}
       </div>
     );
   }
@@ -28,9 +26,16 @@ class ListPage extends React.Component {
 
 const FeedQuery = gql`query {
   allPhotos(orderBy: createdAt_DESC) {
-    id
-    imageUrl
-    description
+    id,
+    imageUrl,
+    description,
+    createdAt,
+    user {
+      id,
+      name,
+      profileImage,
+      displayName
+    }
   }
 }`;
 

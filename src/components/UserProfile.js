@@ -1,8 +1,12 @@
 import React from 'react';
-import Post from '../components/Post';
+import Photo from '../components/Photo';
 import Loading from './presentational/Loading';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+
+import {
+  Link,
+} from 'react-router';
 
 class UserProfile extends React.Component {
 
@@ -24,12 +28,13 @@ class UserProfile extends React.Component {
     }
 
     return (
-      <div className='w-100 flex justify-center'>
-        <div className='w-100' style={{ maxWidth: 400 }}>
-          <h1>{this.props.data.user.name}</h1>
+      <div>
+        <h1>{this.props.data.user.name}</h1>
+        <Link to="/profile/edit">Edit profile</Link>
+        <div style={{maxWidth: "600px", margin: "0 auto", padding: "20px 0"}}>
           {this.props.data.user.photos.map(photo => {
             return (
-              <Post key={photo.id} post={photo} />
+              <Photo key={photo.id} photo={photo} user={this.props.data.user} />
             );
           })}
         </div>
@@ -42,10 +47,13 @@ const FeedQuery = gql`query {
   user {
     id,
     name,
+    displayName,
+    profileImage,
     photos(orderBy: createdAt_DESC) {
       id,
       description,
-      imageUrl
+      imageUrl,
+      createdAt
     }
   }
 }`;

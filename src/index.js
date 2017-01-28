@@ -5,11 +5,11 @@ import CreatePost from './components/CreatePost';
 import CreateUser from './components/CreateUser';
 import ListPage from './components/ListPage';
 import UserProfile from './components/UserProfile';
+import EditProfile from './components/EditProfile';
 import Logout from './components/Logout';
 import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
-import 'tachyons';
 
 const networkInterface = createNetworkInterface({ uri: 'https://api.graph.cool/simple/v1/ciy4kveic00340143rzx2qgck' });
 
@@ -38,7 +38,10 @@ ReactDOM.render((
         <Route path='feed' component={ListPage} />
         <Route path='new' component={CreatePost} />
         <Route path='signup' component={CreateUser} />
-        <Route path='profile' component={UserProfile} />
+        <Route path='profile'>
+          <IndexRoute component={UserProfile} />
+          <Route path='edit' component={EditProfile} />
+        </Route>
         <Route path='logout' component={Logout} />
       </Route>
     </Router>
