@@ -1,5 +1,7 @@
 import React from 'react';
 import Loading from './presentational/Loading';
+import InputField from './InputField';
+import Photo from './presentational/Photo';
 import { withRouter } from 'react-router';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -12,16 +14,17 @@ class CreatePost extends React.Component {
     data: React.PropTypes.object,
   }
 
+  get isDisabledBtn() {
+    return !this.state.imageUrl;
+  }
+
   state = {
     description: '',
     imageUrl: '',
-    user: null,
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.state.user === null && nextProps.data.user) {
-      this.setState({user: nextProps.data.user });
-    }
+  handleInput = (stateKey, event) => {
+    this.setState({[stateKey]: event.target.value});
   }
 
   render () {
@@ -30,41 +33,60 @@ class CreatePost extends React.Component {
     }
 
     // redirect if no user is logged in
+    // Todo: this can be done before render.
     if (!this.props.data.user) {
+      // Todo show a flash message
       console.warn('only logged in users can create new posts');
       this.props.router.push('/');
     }
 
     return (
-      <div className='w-100 pa4 flex justify-center'>
-        <div style={{ maxWidth: 400 }} className=''>
-          <input
-            className='w-100 pa3 mv2'
-            value={this.state.description}
+      <div className="columns" style={{maxWidth: "1040px", margin: "0 auto"}}>
+        <div className="column">
+          <InputField
+            labelName='Description'
             placeholder='Description'
-            onChange={(e) => this.setState({description: e.target.value})}
-          />
-          <input
-            className='w-100 pa3 mv2'
+            stateKey="description"
+            value={this.state.description}
+            handleChange={this.handleInput}
+            />
+
+          <InputField
+            labelName='Image URL'
+            placeholder='example.com/images/01.jpg'
+            stateKey="imageUrl"
             value={this.state.imageUrl}
-            placeholder='Image Url'
-            onChange={(e) => this.setState({imageUrl: e.target.value})}
-          />
-          {this.state.imageUrl &&
-            <img src={this.state.imageUrl} role='presentation' className='w-100 mv3' />
-          }
-          {this.state.description && this.state.imageUrl &&
-           <button className='pa3 bg-black-10 bn dim ttu pointer' onClick={this.handlePost.bind(this)}>Post</button>
-          }
+            handleChange={this.handleInput}
+            />
+
+          <div className="control is-grouped" style={{marginTop: "15px"}}>
+            <p className="control">
+              <button
+                disabled={this.isDisabledBtn}
+                className="button is-primary"
+                onClick={this.handlePost}>
+                Submit
+              </button>
+            </p>
+            <p className="control">
+              <button className="button is-link">Cancel</button>
+            </p>
+          </div>
+        </div>
+        <div className="column">
+          <div style={{maxWidth: "600px", margin: "0 auto", padding: "20px 0"}}>
+            <Photo user={this.props.data.user} photo={this.state} />
+          </div>
+
         </div>
       </div>
     );
   }
 
-  handlePost() {
-    const { description, imageUrl } = this.state;
+  handlePost = () => {
+    let { description, imageUrl } = this.state;
 
-    this.props.mutate({ variables: { description, imageUrl, userId: this.state.user.id }})
+    this.props.mutate({ variables: { description, imageUrl, userId: this.props.data.user.id }})
       .then(() => {
         this.props.router.replace('/');
       });
@@ -82,7 +104,10 @@ const createPost = gql`
 const userQuery = gql`
   query {
     user {
-      id
+      id,
+      name,
+      displayName,
+      profileImage
     }
   }
 `;

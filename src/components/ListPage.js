@@ -1,5 +1,5 @@
 import React from 'react';
-import Photo from '../components/Photo';
+import Photo from '../components/presentational/Photo';
 import Loading from './presentational/Loading';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
