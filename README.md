@@ -1,7 +1,7 @@
-# react-apollo-auth0-example
+# Instaclone-web
 ![](http://i.imgur.com/CH44AZF.png)
 
-Try the [hosted version](http://apollo-email.netlify.com).
+This is an instagram clone built with Graph.cool, Apollo, Auth0, and Impagination.js
 
 ## Getting Started
 
