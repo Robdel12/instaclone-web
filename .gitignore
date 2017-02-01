@@ -11,7 +11,7 @@ build
 # misc
 .DS_Store
 npm-debug.log
-env.js
+.env
 
 #IDE
 .idea/*
