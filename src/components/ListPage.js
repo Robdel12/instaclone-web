@@ -1,6 +1,5 @@
 import React from 'react';
 import Photo from '../components/presentational/Photo';
-import Loading from './presentational/Loading';
 import Infinite from 'react-infinite';
 import Dataset from 'impagination';
 import { graphql } from 'react-apollo';
@@ -8,7 +7,24 @@ import gql from 'graphql-tag';
 
 const ITEM_HEIGHT = 600;
 const HEADER_HEIGHT = 80;
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 4;
+
+// Fake loading post for when the data is still loading
+const LoadingPost = (props) => {
+  let photo = {
+    imageUrl: '//:0',
+    description: 'Loading...',
+    createdAt: new Date(),
+  };
+
+  let user = {
+    profileImage: '//:0',
+    name: 'Loading...',
+    displayName: 'Loading...',
+  };
+
+  return <Photo key={Math.random()} photo={photo} user={user} />;
+};
 
 class ListPage extends React.Component {
 
@@ -38,17 +54,16 @@ class ListPage extends React.Component {
       fetch(pageOffset, pageSize, stats) {
         let skip = pageOffset * pageSize;
 
-        console.group('skip + pagesize');
-        console.log('skip:', skip);
-        console.log('pageSize:', pageSize);
-        console.groupEnd();
-
         return _this.props.data.fetchMore({
           variables: {
             skip: skip,
             first: pageSize
           },
-          updateQuery: (prev, { fetchMoreResult }) => {
+          updateQuery: () => {
+            // This is a required method when using `fetchMore`.
+            // You're supposed to use this to add the results to the data on
+            // your component. But Impagination does that for us already.
+            // So we just return here.
             return;
           }
         }).then(response => response.data.allPhotos);
@@ -70,18 +85,15 @@ class ListPage extends React.Component {
   }
 
   render () {
-    if (this.props.data.loading) {
-      return <Loading />;
-    }
     return (
       <div style={{maxWidth: "600px", margin: "0 auto", padding: "20px 0"}}>
         <Infinite elementHeight={ITEM_HEIGHT} handleScroll={this.setCurrentReadOffset} useWindowAsScrollContainer>
           {this.state.datasetState.map(record => {
-            if ((record.isPending && !record.isSettled)) {
-              return <div key={Math.random()} style={{height: "600px"}}>Loading...</div>;
+            if (record.isPending && !record.isSettled) {
+              return <LoadingPost />;
             }
 
-            return (<Photo key={record.content.id} photo={record.content} user={record.content.user} />);
+            return <Photo key={record.content.id} photo={record.content} user={record.content.user} />;
           })}
         </Infinite>
       </div>
