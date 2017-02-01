@@ -3,19 +3,33 @@ import LoginAuth0 from './LoginAuth0';
 
 import {
   Link,
-  IndexLink
+  IndexLink,
 } from 'react-router';
 
 const NavLink = (props) => {
   return (
-    <Link to={props.link} className='nav-item is-tab' activeClassName="is-active">
+    <Link to={props.link} className='nav-item is-tab' activeClassName="is-active" onClick={props.onClick}>
       {props.title}
     </Link>
   );
 };
 
 export default class Navigation extends Component {
+  state = {
+    mobileActive: false
+  }
+
+  toggleMenu= () => {
+    this.setState({mobileActive: !this.state.mobileActive});
+  }
+
+  closeMenu = () => {
+    this.setState({mobileActive: false});
+  }
+
   render () {
+    let isActive = this.state.mobileActive ? "is-active" : '';
+
     return (
       <nav className="nav has-shadow">
         <div className="container">
@@ -24,20 +38,16 @@ export default class Navigation extends Component {
               Instaclone
             </IndexLink>
           </div>
-          <span className="nav-toggle">
+          <span className="nav-toggle" onClick={this.toggleMenu}>
             <span></span>
             <span></span>
             <span></span>
           </span>
-          <div className="nav-right nav-menu">
-            <a className="nav-item is-tab is-hidden-tablet is-active">Home</a>
-            <a className="nav-item is-tab is-hidden-tablet">Features</a>
-            <a className="nav-item is-tab is-hidden-tablet">Pricing</a>
-            <a className="nav-item is-tab is-hidden-tablet">About</a>
+          <div className={`${isActive} nav-right nav-menu`}>
             {this.props.user &&
-              [<NavLink link="/new" title="New Post" key="newpost" />,
-               <NavLink link="/profile" title="Profile" key="profile" />,
-               <NavLink link="/logout" title="Logout" key="logout" /> ]
+              [<NavLink link="/new" title="New Post" key="newpost" onClick={this.closeMenu} />,
+               <NavLink link="/profile" title="Profile" key="profile" onClick={this.closeMenu} />,
+               <NavLink link="/logout" title="Logout" key="logout" onClick={this.closeMenu} /> ]
                }
                {!this.props.user &&
                  <LoginAuth0 />

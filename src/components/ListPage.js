@@ -23,7 +23,7 @@ const LoadingPost = (props) => {
     displayName: 'Loading...',
   };
 
-  return <Photo key={Math.random()} photo={photo} user={user} />;
+  return <Photo photo={photo} user={user} />;
 };
 
 class ListPage extends React.Component {
@@ -90,7 +90,7 @@ class ListPage extends React.Component {
         <Infinite elementHeight={ITEM_HEIGHT} handleScroll={this.setCurrentReadOffset} useWindowAsScrollContainer>
           {this.state.datasetState.map(record => {
             if (record.isPending && !record.isSettled) {
-              return <LoadingPost />;
+              return <LoadingPost key={Math.random()} />;
             }
 
             return <Photo key={record.content.id} photo={record.content} user={record.content.user} />;
