@@ -1,4 +1,6 @@
 import React from 'react';
+import Loading from './presentational/Loading';
+import InputField from './InputField';
 import { withRouter } from 'react-router';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -14,11 +16,21 @@ class CreateUser extends React.Component {
   state = {
     emailAddress: '',
     name: '',
+    displayName: '',
+    profileImage: '',
+  }
+
+  get isDisabledBtn() {
+    return !this.state.emailAddress && !this.state.name && !this.state.displayName;
+  }
+
+  handleInput = (stateKey, event) => {
+    this.setState({[stateKey]: event.target.value});
   }
 
   render () {
     if (this.props.data.loading) {
-      return (<div>Loading</div>);
+      return <Loading />;
     }
 
     // redirect if user is logged in or did not finish Auth0 Lock dialog
@@ -28,24 +40,54 @@ class CreateUser extends React.Component {
     }
 
     return (
-      <div className='w-100 pa4 flex justify-center'>
-        <div style={{ maxWidth: 400 }} className=''>
-          <input
-            className='w-100 pa3 mv2'
+      <div className="columns" style={{maxWidth: "1040px", margin: "0 auto"}}>
+        <div className="column">
+          <InputField
+            labelName="Email Address"
             value={this.state.emailAddress}
-            placeholder='Email'
-            onChange={(e) => this.setState({emailAddress: e.target.value})}
-          />
-          <input
-            className='w-100 pa3 mv2'
-            value={this.state.name}
-            placeholder='Name'
-            onChange={(e) => this.setState({name: e.target.value})}
-          />
+            placeholder='example@domain.com'
+            stateKey="emailAddress"
+            handleChange={this.handleInput}
+            />
 
-          {this.state.name &&
-          <button className='pa3 bg-black-10 bn dim ttu pointer' onClick={this.createUser}>Sign up</button>
-          }
+          <InputField
+            labelName="Name"
+            value={this.state.name}
+            placeholder='Jimmy Doe'
+            stateKey="name"
+            handleChange={this.handleInput}
+            />
+
+          <InputField
+            labelName="Display Name"
+            value={this.state.displayName}
+            placeholder='@jimmyDoe'
+            stateKey="displayName"
+            handleChange={this.handleInput}
+            />
+
+          <InputField
+            labelName="Profile Image"
+            value={this.state.profileImage}
+            placeholder='example.com/profile.png'
+            stateKey="profileImage"
+            handleChange={this.handleInput}
+            />
+
+
+          <div className="control is-grouped" style={{marginTop: "15px"}}>
+            <p className="control">
+              <button
+                disabled={this.isDisabledBtn}
+                className="button is-primary"
+                onClick={this.createUser}>
+                Submit
+              </button>
+            </p>
+            <p className="control">
+              <button className="button is-link">Cancel</button>
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -56,21 +98,24 @@ class CreateUser extends React.Component {
       idToken: window.localStorage.getItem('auth0IdToken'),
       emailAddress: this.state.emailAddress,
       name: this.state.name,
+      displayName: this.state.displayName,
+      profileImage: this.state.profileImage
     };
 
     this.props.createUser({ variables })
       .then((response) => {
-        this.props.router.replace('/');
+        this.props.router.push('/');
       }).catch((e) => {
         console.error(e);
-        this.props.router.replace('/');
+        // lol handle errors
+        this.props.router.push('/');
       });
   }
 }
 
 const createUser = gql`
-  mutation ($idToken: String!, $name: String!, $emailAddress: String!){
-    createUser(authProvider: {auth0: {idToken: $idToken}}, name: $name, emailAddress: $emailAddress) {
+  mutation ($idToken: String!, $name: String!, $emailAddress: String!, $displayName: String!, $profileImage: String!){
+    createUser(authProvider: {auth0: {idToken: $idToken}}, name: $name, emailAddress: $emailAddress, displayName: $displayName, profileImage: $profileImage) {
       id
     }
   }
