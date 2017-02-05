@@ -41,6 +41,7 @@ class CreateUser extends React.Component {
 
     return (
       <div className="columns" style={{maxWidth: "1040px", margin: "0 auto"}}>
+        <h1>Sign up</h1>
         <div className="column">
           <InputField
             labelName="Email Address"
