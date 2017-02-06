@@ -1,14 +1,12 @@
 import React from 'react';
-import Photo from '../components/presentational/Photo';
-import Loading from './presentational/Loading';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import Photo from './Photo';
+import Loading from './Loading';
 
 import {
   Link,
 } from 'react-router';
 
-class UserProfile extends React.Component {
+class UserProfileView extends React.Component {
 
   static propTypes = {
     data: React.PropTypes.object,
@@ -43,19 +41,4 @@ class UserProfile extends React.Component {
   }
 }
 
-const FeedQuery = gql`query {
-  user {
-    id,
-    name,
-    displayName,
-    profileImage,
-    photos(orderBy: createdAt_DESC) {
-      id,
-      description,
-      imageUrl,
-      createdAt
-    }
-  }
-}`;
-
-export default graphql(FeedQuery)(UserProfile);
+export default UserProfileView;

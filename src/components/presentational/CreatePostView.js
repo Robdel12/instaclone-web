@@ -1,19 +1,10 @@
 import React from 'react';
-import Loading from './presentational/Loading';
+import Loading from './Loading';
 import InputField from './InputField';
-import Photo from './presentational/Photo';
+import Photo from './Photo';
 import { withRouter } from 'react-router';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 
-class CreatePost extends React.Component {
-
-  static propTypes = {
-    router: React.PropTypes.object,
-    mutate: React.PropTypes.func,
-    data: React.PropTypes.object,
-  }
-
+class CreatePostView extends React.Component {
   get isDisabledBtn() {
     return !this.state.imageUrl;
   }
@@ -64,7 +55,7 @@ class CreatePost extends React.Component {
               <button
                 disabled={this.isDisabledBtn}
                 className="button is-primary"
-                onClick={this.handlePost}>
+                onClick={this.handlePost.bind(this)}>
                 Submit
               </button>
             </p>
@@ -83,35 +74,11 @@ class CreatePost extends React.Component {
     );
   }
 
-  handlePost = () => {
+  handlePost() {
     let { description, imageUrl } = this.state;
 
-    this.props.mutate({ variables: { description, imageUrl, userId: this.props.data.user.id }})
-      .then(() => {
-        this.props.router.replace('/');
-      });
+    this.props.handlePost(description, imageUrl);
   }
 }
 
-const createPost = gql`
-  mutation ($description: String!, $imageUrl: String!, $userId: ID!){
-    createPhoto(description: $description, imageUrl: $imageUrl, userId: $userId) {
-      id
-    }
-  }
-`;
-
-const userQuery = gql`
-  query {
-    user {
-      id,
-      name,
-      displayName,
-      profileImage
-    }
-  }
-`;
-
-export default graphql(createPost)(
-  graphql(userQuery, { options: { forceFetch: true }} )(withRouter(CreatePost))
-);
+export default withRouter(CreatePostView);

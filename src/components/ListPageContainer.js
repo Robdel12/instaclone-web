@@ -2,6 +2,7 @@ import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import Dataset from 'impagination';
+import ListPageView from '../components/presentational/ListPageView';
 
 const PAGE_SIZE = 10;
 
@@ -69,12 +70,8 @@ class ListPageContainer extends React.Component {
   }
 
   render () {
-    let childrenWithProps = React.cloneElement(this.props.children, {
-      setCurrentReadOffset: this.setCurrentReadOffset,
-      datasetState: this.state.datasetState
-    });
-
-    return childrenWithProps;
+    return <ListPageView setCurrentReadOffset={this.setCurrentReadOffset}
+      datasetState={this.state.datasetState}/>;
   }
 }
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
-import CreatePost from './components/CreatePost';
-import CreateUser from './components/CreateUser';
-import ListPage from './components/ListPage';
-import UserProfile from './components/UserProfile';
-import EditProfile from './components/EditProfile';
+import CreatePostContainer from './components/CreatePostContainer';
+import CreateUserContainer from './components/CreateUserContainer';
+import ListPageContainer from './components/ListPageContainer';
+import UserProfileContainer from './components/UserProfileContainer';
+import EditProfileContainer from './components/EditProfileContainer';
 import Logout from './components/Logout';
 import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
@@ -34,13 +34,13 @@ ReactDOM.render((
   <ApolloProvider client={client}>
     <Router history={browserHistory}>
       <Route path='/' component={App}>
-        <IndexRoute component={ListPage} />
-        <Route path='feed' component={ListPage} />
-        <Route path='new' component={CreatePost} />
-        <Route path='signup' component={CreateUser} />
+        <IndexRoute component={ListPageContainer} />
+        <Route path='feed' component={ListPageContainer} />
+        <Route path='new' component={CreatePostContainer} />
+        <Route path='signup' component={CreateUserContainer} />
         <Route path='profile'>
-          <IndexRoute component={UserProfile} />
-          <Route path='edit' component={EditProfile} />
+          <IndexRoute component={UserProfileContainer} />
+          <Route path='edit' component={EditProfileContainer} />
         </Route>
         <Route path='logout' component={Logout} />
       </Route>

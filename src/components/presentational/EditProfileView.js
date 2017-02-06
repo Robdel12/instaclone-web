@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import Loading from './presentational/Loading';
+import Loading from './Loading';
 import InputField from './InputField';
-import { withRouter } from 'react-router';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 
-class EditProfile extends Component {
+class EditProfileView extends Component {
   static propTypes = {
     data: React.PropTypes.object,
   }
@@ -25,11 +22,8 @@ class EditProfile extends Component {
 
   handleSubmit = () => {
     let { displayName, name, profileImage, emailAddress } = this.state;
-    let id = this.props.data.user.id;
 
-    this.props.mutate({ variables: { id: id, displayName, name, profileImage, emailAddress}}).then(() => {
-        this.props.router.push('/profile');
-      });
+    this.props.handleSubmit(displayName, name, profileImage, emailAddress);
   }
 
   render() {
@@ -93,23 +87,4 @@ class EditProfile extends Component {
   }
 }
 
-const UserQuery = gql`query {
-  user {
-    id,
-    name,
-    displayName,
-    profileImage,
-    emailAddress
-  }
-}`;
-
-const UpdateUser = gql`
-  mutation ($id: ID!, $name: String!, $displayName: String!, $profileImage: String!, $emailAddress: String!){
-    updateUser(id: $id, name: $name, displayName: $displayName, profileImage: $profileImage, emailAddress: $emailAddress) {
-      id
-    }
-  }
-`;
-
-
-export default graphql(UpdateUser)(graphql(UserQuery)(withRouter(EditProfile)));
+export default EditProfileView;

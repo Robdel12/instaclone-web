@@ -1,11 +1,9 @@
 import React from 'react';
-import Loading from './presentational/Loading';
+import Loading from './Loading';
 import InputField from './InputField';
 import { withRouter } from 'react-router';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 
-class CreateUser extends React.Component {
+class CreateUserView extends React.Component {
 
   static propTypes = {
     router: React.PropTypes.object.isRequired,
@@ -95,41 +93,15 @@ class CreateUser extends React.Component {
   }
 
   createUser = () => {
-    const variables = {
-      idToken: window.localStorage.getItem('auth0IdToken'),
-      emailAddress: this.state.emailAddress,
-      name: this.state.name,
-      displayName: this.state.displayName,
-      profileImage: this.state.profileImage
-    };
+    const {
+      emailAddress,
+      name,
+      displayName,
+      profileImage
+    } = this.state;
 
-    this.props.createUser({ variables })
-      .then((response) => {
-        this.props.router.push('/');
-      }).catch((e) => {
-        console.error(e);
-        // lol handle errors
-        this.props.router.push('/');
-      });
+    this.props.createUser(emailAddress, name, displayName, profileImage);
   }
 }
 
-const createUser = gql`
-  mutation ($idToken: String!, $name: String!, $emailAddress: String!, $displayName: String!, $profileImage: String!){
-    createUser(authProvider: {auth0: {idToken: $idToken}}, name: $name, emailAddress: $emailAddress, displayName: $displayName, profileImage: $profileImage) {
-      id
-    }
-  }
-`;
-
-const userQuery = gql`
-  query {
-    user {
-      id
-    }
-  }
-`;
-
-export default graphql(createUser, {name: 'createUser'})(
-  graphql(userQuery, { options: { forceFetch: true }})(withRouter(CreateUser))
-);
+export default withRouter(CreateUserView);
